@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Behind the Door</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            opacity: 0; /* Start with opacity 0 */
+            transition: opacity 1.5s ease-in; /* Smooth transition effect */
+        }
+        a {
+            color: rgb(54, 225, 231); 
+            text-decoration: underline; 
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        .left {
+            margin: 0 60px;
+            width: 30%;
+        }
+        .right {
+            width: 30%;
+            text-align: left;
+            margin: 0 60px;
+        }
+        .door {
+            width: 30%;
+            height: 70vh;
+            border: 2px solid white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .window {
+            width: 80%;
+            height: 80px;
+            border: 2px solid white;
+            position: absolute;
+            top: 18%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #0D0D0D;
+        }
+        .window img {
+            max-height: 100%;
+            max-width: 100%;
+            transform: scale(1.2);
+        }
+        .door-knob {
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            position: absolute;
+            right: 10%; 
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+        }
+        .option {
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .option:hover {
+            color: yellow;
+        }
+        #dialogue {
+            display: none;
+        }
+        .clue-link {
+            color: cyan;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .clue-link:hover {
+            color: lightblue;
+        }
+        #password-input {
+            display: none;
+            margin-top: 10px;
+        }
+        #password-box {
+            width: 80%;
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid white;
+            background: #050505;
+            color: white;
+            font-family: 'Pixelify Sans', sans-serif;
+        }
+        #submit-btn {
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            border: 2px solid white;
+            background: #0D0D0D;
+            color: white;
+            font-family: 'Pixelify Sans', sans-serif;
+        }
+        #submit-btn:hover {
+            background: white;
+            color: #0D0D0D;
+        }
+
+            /* Backpack Icon */
+        #backpack {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            cursor: pointer;
+        }
+
+        #backpack img {
+            width: 120px;
+            height: auto;
+        }
+
+        /* Inventory Popup */
+        #inventory-popup {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: #111111;
+            color: white;
+            padding: 15px;
+            border: 2px solid white;
+            display: none;
+            width: 250px;
+            text-align: center;
+        }
+
+        #inventory-slots {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .slot {
+            width: 40px;
+            height: 40px;
+            border: 2px solid white;
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slot img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #item-input {
+            width: 80%;
+            padding: 5px;
+            font-size: 14px;
+            margin-bottom: 5px;
+            background: #050505;
+            color: white;
+            font-family: 'Pixelify Sans', sans-serif;
+        }
+        #find-btn {
+            padding: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid white;
+            background: #0D0D0D;
+            color: white;
+            font-family: 'Pixelify Sans', sans-serif;
+        }
+
+        #find-btn:hover {
+            background: white;
+            color: #0D0D0D;
+        }
+
+        #close-inventory {
+            margin-top: 10px;
+            background: #0D0D0D;
+            color: white;
+            font-family: 'Pixelify Sans', sans-serif;
+            border: 2px solid white;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #close-inventory:hover {
+            background: white;
+            color: #0D0D0D;
+        }
+        .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        color: white;
+        width: 500px;
+        height: 700px;
+        border: 2px solid white;
+    }
+
+    .popup img {
+        max-width: 100%;
+        max-height: 80%;
+        margin-bottom: 10px;
+    }
+
+    .popup-buttons button {
+        margin: 5px;
+        padding: 8px 15px;
+        background: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* Dark overlay for Eyes effect */
+    #dark-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        pointer-events: none; /* Allows clicking through */
+        z-index: 1000;
+    }
+
+    </style>
+</head>
+<body>
+
+<div id="dark-overlay"></div>
+
+<div class="container">
+    <div class="left">
+        <div id="dialogue-timestamp"></div>
+        <h2>What do you want to do?</h2>
+        <div class="option" onclick="showDialogue('clue')">Ask for clues</div>
+        <div class="option" onclick="showDialogue('flirt')">Flirt</div>
+        <div class="option" onclick="showDialogue('chat')">Chat</div>
+        <div class="option" onclick="showDialogue('password')">Input Password</div>
+    </div>
+
+    <div class="door">
+        <div class="window">
+            <img id="eye-image" src="images/eye1.png" alt="Eye">
+        </div>
+        <div class="door-knob"></div>
+    </div>
+
+    <div class="right">
+        <div id="dialogue">
+            <h2 style="color: #AB1791;">Cyrus:</h2>
+            <p id="dialogue-text"></p>
+            <div id="password-input">
+                <input type="text" id="password-box" placeholder="Enter password...">
+                <button id="submit-btn" onclick="checkPassword()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="backpack">
+    <img src="images/backpack.png" alt="Backpack" id="backpack-icon" onclick="toggleInventory()">
+</div>
+
+<div id="inventory-popup">
+    <h2>Inventory</h2>
+    <div id="inventory-slots">
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+    </div>
+    <input type="text" id="item-input" placeholder="Find an item...">
+    <button id="find-btn" onclick="playTypingSound(); addItem()">Find</button>
+    <p id="inventory-message"></p>
+    <button id="close-inventory" onclick="playTypingSound(); toggleInventory()">Close</button>
+</div>
+
+<audio id="typing-sound" src="typing.mp3"></audio>
+
+<div id="item-popup" class="popup">
+    <img id="popup-image" src="" alt="Item Image">
+    <p id="popup-text">Item description here</p>
+    <div class="popup-buttons">
+        <button id="find-btn" onclick="playTypingSound(); showItemInfo()">Info</button>
+        <button id="find-btn" onclick="playTypingSound(); closeItemPopup()">Back</button>
+        <button id="find-btn" onclick="playTypingSound(); useItem()">Use</button>
+    </div>
+</div>
+
+<script>
+
+    const validItems = ["Picture", "Plush", "Notes", "Eyes", "Fur"];
+    const inventory = [];
+    let chatPool = [];
+    let flirtPool = [];
+    let cluePool = [];
+    let sadPool = [];
+    let isEyesEffectActive = false; // Flag to track if Eyes effect is active
+
+    // Load inventory from localStorage on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        loadInventory();
+        setTimeout(function() {
+            document.body.style.opacity = 1;
+        }, 100);
+    });
+
+    // Function to save inventory to localStorage
+    function saveInventory() {
+        localStorage.setItem('dragonGameInventory', JSON.stringify(inventory));
+    }
+
+    // Function to load inventory from localStorage
+    function loadInventory() {
+        const savedInventory = localStorage.getItem('dragonGameInventory');
+        if (savedInventory) {
+            // Clear current inventory
+            inventory.length = 0;
+            
+            // Parse the saved inventory
+            const savedItems = JSON.parse(savedInventory);
+            
+            // Add each item back to the inventory
+            savedItems.forEach(item => {
+                if (validItems.includes(item) && !inventory.includes(item)) {
+                    inventory.push(item);
+                    
+                    // Update the visual slot
+                    const index = inventory.length - 1;
+                    const slots = document.querySelectorAll(".slot");
+                    
+                    if (slots[index]) {
+                        const img = document.createElement("img");
+                        img.src = `images/${item.toLowerCase()}.png`;
+                        img.alt = item;
+                        img.classList.add("inventory-item");
+                        
+                        slots[index].innerHTML = "";
+                        slots[index].appendChild(img);
+                        slots[index].setAttribute("data-item", item);
+                        slots[index].addEventListener("click", () => showItemPopup(item));
+                    }
+                }
+            });
+            
+            // Display a message if items were loaded
+            if (inventory.length > 0) {
+                const message = document.getElementById("inventory-message");
+                message.textContent = "Items loaded from previous session";
+                setTimeout(() => {
+                    message.textContent = "";
+                }, 3000);
+            }
+        }
+    }
+
+    function playTypingSound() {
+        const audio = document.getElementById("typing-sound");
+        audio.currentTime = 0; 
+        audio.volume = 1;
+        audio.play();
+    }
+
+    function toggleInventory() {
+        const popup = document.getElementById("inventory-popup");
+        popup.style.display = popup.style.display === "block" ? "none" : "block";
+    }
+
+    function addItem() {
+        const input = document.getElementById("item-input").value.trim();
+        const message = document.getElementById("inventory-message");
+        const slots = document.querySelectorAll(".slot");
+
+        if (validItems.includes(input)) {
+            if (inventory.length >= 5) {
+                message.textContent = "Inventory is full!";
+                return;
+            }
+            if (inventory.includes(input)) {
+                message.textContent = `You already have ${input} in your inventory!`;
+                return;
+            }
+            inventory.push(input);
+
+            // Add the item visually as an image
+            const index = inventory.length - 1;
+            const img = document.createElement("img");
+            img.src = `images/${input.toLowerCase()}.png`; // Make sure filenames match
+            img.alt = input;
+            img.classList.add("inventory-item"); // Add a class for styling
+
+            // Clear slot and append the image
+            slots[index].innerHTML = ""; // Clear text
+            slots[index].appendChild(img);
+            slots[index].setAttribute("data-item", input);
+            slots[index].addEventListener("click", () => showItemPopup(input));
+
+            message.textContent = `You obtained ${input}! It's now in your inventory.`;
+            
+            // Save to localStorage
+            saveInventory();
+        } else {
+            message.textContent = "Cannot find the item.";
+        }
+
+        document.getElementById("item-input").value = ""; // Clear input
+    }
+
+    const itemDescriptions = {
+        "Picture": "A hand drawn picture of a purple dragon smiling towards the viewer.",
+        "Plush": "A soft and huggable plush of Cyrus.",
+        "Notes": "'Hey Cyrus! I hope you're doing well. I know it has been a while but life has been very busy lately, but i do hope we can meet very soon. Anyways, see you later~'<br>- You know who",
+        "Eyes": "d̸̛̲͉̠̠͕̓̌͒̌̔̈́͒̔̓͝ỏ̵̲̯̤̺͕̘̾̊̌̏̈́͜͝n̴̝͙̹̩̖͙̩͉̄̈́̓̓͊͐̉̀̀̓̈́͘ȯ̴̢̦̗͍̦̱̯̪͚͐̽̔͗̈́̕̚͝ṯ̴̼̹̬̜̠̘̭͙̯̯̖͗̒̾̓̈̈́̍͛͆̈́̕͘͜͠ͅu̴̡̼̰͕̱̞̰̝̰͍̟̝͈͎͍̽̒̑̄̀̀̈́̔͐̍͝͝s̴̨͚͓̻̜͔͔̞̲͎̫̳̀̋̏̄͋̏͜e̷͎̱͕̼̯̗̺͍͓̲̎̅̍̔́̂͝͝ţ̴̻̦̯͗̊̏̓̎̚h̸̹̞͍̬͓͙̩̤̹͙͕͕͍̩̊͋̃͗͠i̴̤͛͊͒̽͆́ṡ̴͙̪̤̠̞̘̭̠̙̫̫̝̩͓̹̉̃̃̓͒̇̀̈͊̓͘͝d̸̩̬̟̩͉͓̪͇̍̔̂o̴͈͛̔͊̒n̶̙̟̙̝̘̿͑̍̉͆̚ǫ̵̢̗̩̫̈́̐͊̒̀̃̄̂́̿̇̓͘̚t̶͖͍̲̝͙͂̌͐̔̈́̑͂͘u̸̡̨̱̩̲̖̣̠͙̙̝͛̊͊͂̑̅̐̅̆͒̇͊̚̚ṣ̸̞͇̳̣͎̙͇͕̪͍͓̙̻̋ĕ̷̡͉̹̲̭̙̞̥͉͖̳͉̬̂̀͂̂́ͅţ̷̛̼̳̻̦͍̗̝̞͖͙̌́͋̈́̽͂͘͜͜h̶̗̠̯͚̍͂͗̚͝i̴̩̖͙̇̈́̕s̴̢̢̛̻̱͎̼̮̜͚̖̤̬̎̽̈́́̒̕͝ͅ.",
+        "Fur": "A fluffy piece of gray fur, looks like it is Cyrus' fur."
+    };
+
+    function playTypingSound() {
+        const audio = document.getElementById("typing-sound");
+        audio.currentTime = 0; 
+        audio.volume = 1;
+        audio.play();
+    }
+
+    function toggleInventory() {
+        const popup = document.getElementById("inventory-popup");
+        popup.style.display = popup.style.display === "block" ? "none" : "block";
+    }
+
+    function showItemPopup(item) {
+        playTypingSound();
+        const itemPopup = document.getElementById("item-popup");
+        const itemImage = document.getElementById("popup-image");
+        const itemText = document.getElementById("popup-text");
+
+        itemPopup.style.display = "block";
+        itemImage.src = `images/${item.toLowerCase()}.png`; // Change this to actual image paths
+        itemText.textContent = `You are viewing ${item}.`;
+        itemPopup.setAttribute("data-item", item); // Store the item name for info button
+    }
+
+    function showItemInfo() {
+        playTypingSound();
+        const itemPopup = document.getElementById("item-popup");
+        const itemText = document.getElementById("popup-text");
+        const itemName = itemPopup.getAttribute("data-item");
+
+        if (itemName && itemDescriptions[itemName]) {
+            itemText.innerHTML = itemDescriptions[itemName]; // Display item info in popup
+        } else {
+            itemText.textContent = "No information available.";
+        }
+    }
+
+    function closeItemPopup() {
+        playTypingSound();
+        document.getElementById("item-popup").style.display = "none";
+    }
+    function closeDialogue() {
+        document.getElementById("dialogue-box").style.display = "none";
+    }
+
+    function useItem() {
+        playTypingSound();
+        
+        const itemPopup = document.getElementById("item-popup");
+        const item = itemPopup.getAttribute("data-item");
+
+        const cyrusReactions = {
+            "Picture": "Oh, that's an old drawing i made, i don't know where you got it but it's nice to see it again.",
+            "Plush": "W-what?! Where did you get that plush?!",
+            "Notes": "Hey give that back, you're not supposed to read that!",
+            "Eyes": "You shouldn't have taken those...",
+            "Fur": "My fur? How..? Why are you holding that? That's... weird."
+        };
+
+        const dialogueBox = document.getElementById("dialogue");
+        dialogueBox.style.display = "block";
+        
+        // Special case for Eyes item
+        if (item === "Eyes") {
+            isEyesEffectActive = !isEyesEffectActive; // Toggle the effect state
+            toggleEyesEffect(isEyesEffectActive);
+            
+            if (isEyesEffectActive) {
+                // Show repeated message when activating
+                typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+            } else {
+                // Show normal reaction when deactivating
+                typeText(cyrusReactions[item]);
+                changeEyeSprite("angry");
+            }
+        } else {
+            // Normal behavior for other items
+            if (isEyesEffectActive) {
+            typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+            return;
+        }
+            const dialogueText = cyrusReactions[item] || "I don't know what to say about that...";
+            typeText(dialogueText);
+            
+            if (item === "Picture") {
+                changeEyeSprite("happy");
+            } else if (item === "Fur") {
+                changeEyeSprite("sad");
+            } else if (item === "Plush" || item === "Notes") {
+                changeEyeSprite("angry");
+            } else {
+                changeEyeSprite("normal");
+            }
+        }
+        
+        updateTimestamp();
+        closeItemPopup();
+    }
+
+    // Function to toggle the Eyes effect
+    function toggleEyesEffect(active) {
+        const eyeImage = document.getElementById("eye-image");
+        const darkOverlay = document.getElementById("dark-overlay");
+        
+        if (active) {
+            // Store the original image source for later restoration
+            eyeImage.setAttribute("data-original-src", eyeImage.src);
+            // Replace with Eyes item image
+            eyeImage.src = "images/eyes.png";
+            // Show the dark overlay
+            darkOverlay.style.display = "block";
+            // Add a slight red tint to the overlay for a more unsettling effect
+            darkOverlay.style.backgroundColor = "rgba(10, 0, 0, 0.75)";
+        } else {
+            // Restore original image if available, otherwise use default
+            const originalSrc = eyeImage.getAttribute("data-original-src");
+            eyeImage.src = originalSrc || eyeImages.normal;
+            // Hide the dark overlay
+            darkOverlay.style.display = "none";
+        }
+    }
+
+    function shuffleArray(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    const chatDialogues = [
+        "You doing okay Praktikan Sisop?",
+        "Who am i? I'm just an ordinary gray dragon, call me Cyrus.",
+        "What's behind this door? Why don't you input the correct password and find out?",
+        "Don't ask why a dragon is able to talk, I won't be able to give you hints if you can't understand me.",
+        "Why're you still here? Find the password already.",
+        "Do you know that PuroFuro is... actually nevermind.",
+        "Whoever is doing this Sisop question i wish you good luck.",
+        "I hope finding the password isn't too hard for you.",
+        "*Yawn... * oh you're still here? C'mon just find the password already.",
+        "On a serious note i don't know why i'm doing all of this website coding."
+    ];
+
+    const flirtDialogues = [
+        "Huh..? Don't you have anything better to do than flirting with a dragon?",
+        "Seriously?",
+        "Flirting with me? How bold. But trust me you won't get anything by flirting with me.",
+        "I'm a dragon, not a human. Unless you're into that sort of thing then go ahead.. the answer is still no though.",
+        "Roses are Red,         Violets are Blue,            Please stop flirting,            Cause I'm not into you.",
+        "*Annoyed dragon noises*",
+    ];
+
+    const sadDialogues = [
+        "Ow! Hey stop it!",
+        "Hey, that hurts you know...",
+        "Y-you little...",
+        "Are you doing this on purpose?",
+        "Ow!",
+        "Ouch!",
+        "Hey!",
+        "Stop it!"
+    ];
+
+    function getDialogue(type) {
+        let pool, original;
+
+        if (type === "chat") {
+            pool = chatPool;
+            original = chatDialogues;
+        } else if (type === "flirt") {
+            pool = flirtPool;
+            original = flirtDialogues;
+        } else if (type === "sad") {
+            pool = sadPool;
+            original = sadDialogues;
+        }
+
+        if (pool.length === 0) {
+            pool.push(...shuffleArray([...original]));
+        }
+
+        return pool.pop();
+    }
+
+    let typingEffect; 
+    let usedClues = new Set(); 
+
+    const clueDialogue = [
+        "Something-something file length...",
+        "1 a 2 b and so on....",
+        "I can't give you unlimited clues you know.",
+        `You already knew about this right? <a href="https://drive.google.com/file/d/1l2B9eBWMzDKa3uYOrnk-7VyeQC9wzoz0/view" target="_blank">Clues.</a>`
+    ];
+
+    function getRandomClue() {
+        if (usedClues.size === clueDialogue.length) usedClues.clear(); 
+
+        let clue;
+        do {
+            clue = clueDialogue[Math.floor(Math.random() * clueDialogue.length)];
+        } while (usedClues.has(clue));
+
+        usedClues.add(clue);
+        return clue;
+    }
+
+    let typingSound = new Audio("typing.mp3"); 
+
+    function typeText(text) {
+        const dialogueText = document.getElementById("dialogue-text");
+        dialogueText.innerHTML = "";
+        let i = 0;
+        let lastPlayedTime = 0; 
+
+        clearTimeout(typingEffect); 
+
+        function typeNext() {
+            if (i < text.length) {
+                if (text.substring(i, i + 3) === "<a ") { 
+                    
+                    let endIndex = text.indexOf("</a>", i) + 4;
+                    dialogueText.innerHTML += text.substring(i, endIndex);
+                    i = endIndex;
+                } else {
+                    dialogueText.innerHTML += text[i];
+
+                    let now = Date.now();
+                    if (text[i] !== " " && now - lastPlayedTime > 50) { 
+                        typingSound.currentTime = 0.05; 
+                        typingSound.play();
+                        lastPlayedTime = now; 
+                    }
+
+                    i++;
+                }
+                typingEffect = setTimeout(typeNext, 20); 
+            }
+        }
+
+        typeNext();
+    }
+
+    const eyeImages = {
+        normal: "images/eye1.png", 
+        angry: "images/eye2.png",  
+        sad: "images/eye3.png",    
+        happy: "images/eye4.png"   
+    };
+
+    function getRandomEye(options) {
+        return options[Math.floor(Math.random() * options.length)];
+    }
+
+    function changeEyeSprite(action, isPasswordCorrect = null) {
+        // If Eyes effect is active, don't change the sprite
+        if (isEyesEffectActive) return;
+        
+        let eyeImage;
+
+        if (action === "flirt") {
+            eyeImage = getRandomEye([eyeImages.angry, eyeImages.sad]); 
+        } else if (action === "password") {
+            eyeImage = isPasswordCorrect ? eyeImages.happy : eyeImages.angry; 
+        } else if (action === "clue") {
+            eyeImage = getRandomEye([eyeImages.happy, eyeImages.normal]); 
+        } else if (action === "chat") {
+            eyeImage = getRandomEye([eyeImages.happy, eyeImages.normal, eyeImages.sad]); 
+        } else if (action === "input-password") {
+            eyeImage = eyeImages.happy; 
+        } else if (action === "sad") {  
+            eyeImage = eyeImages.sad;
+        } else if (action === "happy") {
+            eyeImage = eyeImages.happy;
+        } else if (action === "normal") {
+            eyeImage = eyeImages.normal;
+        } else if (action === "angry") {
+            eyeImage = eyeImages.angry;
+        }  else {
+            eyeImage = eyeImages.normal; 
+        }
+
+        document.getElementById("eye-image").src = eyeImage;
+    }
+
+    function updateTimestamp() {
+        const timestampElement = document.getElementById("dialogue-timestamp");
+
+        if (timestampElement) {
+            const now = new Date();
+            const formattedTime = now.toLocaleString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+
+            timestampElement.innerHTML = formattedTime;
+        }
+    }
+updateTimestamp();
+setInterval(updateTimestamp, 1000);
+
+    function showDialogue(type) {
+        const dialogueBox = document.getElementById("dialogue");
+        const passwordInput = document.getElementById("password-input");
+
+        dialogueBox.style.display = "block";
+        passwordInput.style.display = "none";
+
+        clearInterval(typingEffect); 
+        updateTimestamp();
+
+        // Check if Eyes effect is active
+        if (isEyesEffectActive) {
+            typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+            return;
+        }
+
+        if (type === "password") {
+            typeText("Ah, you found the password already? Enter it here.");
+            passwordInput.style.display = "block";
+            changeEyeSprite("input-password"); 
+        } else if (type === "clue") {
+            let clue = getRandomClue();
+            typeText(clue);
+            changeEyeSprite("clue"); 
+        } else {
+            let text = getDialogue(type);
+            typeText(text);
+            changeEyeSprite(type); 
+        }
+    }
+
+    async function checkPassword() {
+    const correctHash = "6c1e140f96d46aef75016d1eaba09500b445b59846d748b15af0ca91a1c78815"; 
+    const input = document.getElementById("password-box").value.trim();
+    const dialogueBox = document.getElementById("dialogue");
+
+    if (!dialogueBox) return; 
+
+    dialogueBox.style.display = "block"; 
+
+    // Check if Eyes effect is active
+    if (isEyesEffectActive) {
+        typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+        return;
+    }
+
+    const inputHash = await hashPassword(input);
+
+    if (inputHash === correctHash) {
+        typeText("Correct! Welcome inside.");
+        changeEyeSprite("password", true); 
+
+        setTimeout(() => {
+        window.location.href = "congrats.html";
+    }, 1000); 
+    } else {
+        typeText("Nope.");
+
+        setTimeout(() => {
+            changeEyeSprite("password", false); 
+        }, 300); 
+    }
+}
+
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(hashBuffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+    document.getElementById("eye-image").addEventListener("click", function () {
+        if (isEyesEffectActive) {
+            typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+        } else {
+            showDialogue("sad");
+        }
+    });
+
+    // Add fade-in effect when the page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            document.body.style.opacity = 1;
+        }, 100);
+    });
+
+</script>
+
+</body>
+</html>
