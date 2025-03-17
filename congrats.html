@@ -158,6 +158,34 @@
             transition: opacity 1s ease-out;
         }
     </style>
+    <script>
+        // Preload images function
+        function preloadImages() {
+            // Array of all image paths to preload
+            const imagesToPreload = [
+                'images/c_normal.png',
+                'images/c_open.png',
+                'images/c_smug.png'
+            ];
+            
+            // Create array to store the image objects
+            const preloadedImages = [];
+            
+            // Loop through each image and preload it
+            imagesToPreload.forEach((src) => {
+                const img = new Image();
+                img.src = src;
+                preloadedImages.push(img);
+            });
+            
+            return new Promise((resolve) => {
+                // Wait a short time to allow images to start loading
+                setTimeout(() => {
+                    resolve();
+                }, 500);
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="bg-image"></div>
@@ -170,7 +198,7 @@
             <p id="dialogue-text"></p>
         </div>
         <button id="next-btn" class="btn hidden">Next</button>
-        <button id="back-btn" class="btn hidden" onclick="window.location.href='testing.html'">Go Back</button>
+        <button id="back-btn" class="btn hidden" onclick="window.location.href='index.html'">Go Back</button>
     </div>
 
     <div id="full-screen-message">
@@ -326,41 +354,44 @@
 
         // Initialize page
         document.addEventListener("DOMContentLoaded", function() {
-            // Play horn sound when page loads
-            const hornSound = document.getElementById("horn-sound");
-            
-            // Set volume to 50%
-            hornSound.volume = 0.5;
-            
-            // Try to play the sound immediately on page load
-            hornSound.play().catch(error => {
-                console.log("Autoplay blocked:", error);
+            // Preload images first, then initialize everything else
+            preloadImages().then(() => {
+                // Play horn sound when page loads
+                const hornSound = document.getElementById("horn-sound");
                 
-                // Fallback to play on first interaction with the page (any click)
-                document.addEventListener('click', function playOnFirstClick() {
-                    hornSound.play();
-                    // Remove the event listener after first click
-                    document.removeEventListener('click', playOnFirstClick);
-                }, { once: true });
+                // Set volume to 50%
+                hornSound.volume = 0.3;
+                
+                // Try to play the sound immediately on page load
+                hornSound.play().catch(error => {
+                    console.log("Autoplay blocked:", error);
+                    
+                    // Fallback to play on first interaction with the page (any click)
+                    document.addEventListener('click', function playOnFirstClick() {
+                        hornSound.play();
+                        // Remove the event listener after first click
+                        document.removeEventListener('click', playOnFirstClick);
+                    }, { once: true });
+                });
+                
+                setTimeout(function() {
+                    document.body.style.opacity = 1;
+                }, 100);
+                
+                updateTimestamp();
+                setInterval(updateTimestamp, 1000);
+                
+                // Set initial background image
+                document.querySelector('.bg-image').style.backgroundImage = `url('${backgroundImages[0]}')`;
+                
+                // Start with first message after fade-in completes
+                setTimeout(function() {
+                    typeText(congratsMessages[0]);
+                }, 800);
+                
+                // Set up next button event
+                document.getElementById("next-btn").addEventListener("click", showNextMessage);
             });
-            
-            setTimeout(function() {
-                document.body.style.opacity = 1;
-            }, 100);
-            
-            updateTimestamp();
-            setInterval(updateTimestamp, 1000);
-            
-            // Set initial background image
-            document.querySelector('.bg-image').style.backgroundImage = `url('${backgroundImages[0]}')`;
-            
-            // Start with first message after fade-in completes
-            setTimeout(function() {
-                typeText(congratsMessages[0]);
-            }, 800);
-            
-            // Set up next button event
-            document.getElementById("next-btn").addEventListener("click", showNextMessage);
         });
     </script>
 </body>
