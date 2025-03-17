@@ -328,6 +328,7 @@
     let cluePool = [];
     let sadPool = [];
     let isEyesEffectActive = false; // Flag to track if Eyes effect is active
+    let EyeDialogue = "................................................................ ................................................................ ................................................................ ................................................................ ................................................................ ................................................................ ................................................................ ................................................................ ................................................................ ................................................................ "
 
     // Load inventory from localStorage on page load
     document.addEventListener("DOMContentLoaded", function() {
@@ -515,7 +516,7 @@
             
             if (isEyesEffectActive) {
                 // Show repeated message when activating
-                typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+                typeText(EyeDialogue);
             } else {
                 // Show normal reaction when deactivating
                 typeText(cyrusReactions[item]);
@@ -524,7 +525,7 @@
         } else {
             // Normal behavior for other items
             if (isEyesEffectActive) {
-            typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+            typeText(EyeDialogue);
             return;
         }
             const dialogueText = cyrusReactions[item] || "I don't know what to say about that...";
@@ -759,7 +760,7 @@ setInterval(updateTimestamp, 1000);
 
         // Check if Eyes effect is active
         if (isEyesEffectActive) {
-            typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+            typeText(EyeDialogue);
             return;
         }
 
@@ -789,7 +790,7 @@ setInterval(updateTimestamp, 1000);
 
     // Check if Eyes effect is active
     if (isEyesEffectActive) {
-        typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+        typeText(EyeDialogue);
         return;
     }
 
@@ -822,7 +823,7 @@ async function hashPassword(password) {
 
     document.getElementById("eye-image").addEventListener("click", function () {
         if (isEyesEffectActive) {
-            typeText("why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen why didnt you listen");
+            typeText(EyeDialogue);
         } else {
             showDialogue("sad");
         }
