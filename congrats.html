@@ -18,11 +18,10 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            opacity: 0; /* Start with opacity 0 */
-            transition: opacity 1.5s ease-in; /* Smooth transition effect */
+            opacity: 0;     
+            transition: opacity 1.5s ease-in; 
         }
 
-        /* Full-screen background image */
         .bg-image {
             position: fixed;
             top: 0;
@@ -35,7 +34,6 @@
             z-index: -1;
         }
 
-        /* Big congratulations text */
         .congrats-text {
             position: fixed;
             top: 80px;
@@ -55,7 +53,6 @@
             100% { transform: scale(1) rotate(-5deg); }
         }
 
-        /* Dialogue box styling */
         #dialogue-container {
             background-color: rgba(0, 0, 0, 0.8);
             border: 2px solid white;
@@ -77,12 +74,11 @@
 
         #dialogue-text {
             line-height: 1.5;
-            max-height: 60vh; /* Maximum height limited to 60% of viewport height */
-            overflow-y: auto; /* Add scrollbar if content exceeds max-height */
-            padding-right: 5px; /* Space for scrollbar */
+            max-height: 60vh; 
+            overflow-y: auto; 
+            padding-right: 5px; 
         }
 
-        /* Custom scrollbar styling */
         #dialogue-text::-webkit-scrollbar {
             width: 5px;
         }
@@ -128,7 +124,6 @@
             display: none;
         }
 
-        /* Full screen message styling */
         #full-screen-message {
             position: fixed;
             top: 0;
@@ -159,19 +154,16 @@
         }
     </style>
     <script>
-        // Preload images function
         function preloadImages() {
-            // Array of all image paths to preload
             const imagesToPreload = [
                 'images/c_normal.png',
                 'images/c_open.png',
-                'images/c_smug.png'
+                'images/c_smug.png',
+                'images/c_smug_open.png' 
             ];
             
-            // Create array to store the image objects
             const preloadedImages = [];
             
-            // Loop through each image and preload it
             imagesToPreload.forEach((src) => {
                 const img = new Image();
                 img.src = src;
@@ -179,7 +171,6 @@
             });
             
             return new Promise((resolve) => {
-                // Wait a short time to allow images to start loading
                 setTimeout(() => {
                     resolve();
                 }, 500);
@@ -209,17 +200,15 @@
     <audio id="typing-sound" src="typing.mp3"></audio>
 
     <script>
-        // Messages to display in sequence
         const congratsMessages = [
             "Well done! You've found the password!",
             "I hope it wasn't too difficult to find. Honestly i don't know if its hard or not.",
-            "I tried to make the challenge interesting by making this website and the inventory stuff.. which is kinda out of place",
+            "I tried to make the challenge interesting by making this website and the inventory stuff.. which is kinda weird i know.",
             "Anyways, congratulations on completing this challenge! You've done well, Praktikan Sisop.",
             "I just hope you didn't cheat by looking someone's code or finding this website by looking at the source code.",
             "This is the end of the line for now. Maybe we'll meet again in another module? If i'm not lazy that is."
         ];
-        
-        // Images to display for each message
+
         const backgroundImages = [
             'images/c_normal.png',
             'images/c_open.png',
@@ -229,14 +218,48 @@
             'images/c_open.png'
         ];
         
-        // Final message to be displayed on full screen
         const finalMessage = "Until next time, take care!";
         const finalImage = 'images/c_normal.png';
 
         let currentMessageIndex = 0;
         let typingEffect;
+
+        const talkingImagePairs = [
+            ['images/c_normal.png', 'images/c_open.png'],     
+            ['images/c_normal.png', 'images/c_open.png'],     
+            ['images/c_smug.png', 'images/c_smug_open.png'],  
+            ['images/c_normal.png', 'images/c_open.png'],     
+            ['images/c_smug.png', 'images/c_smug_open.png'],  
+            ['images/c_normal.png', 'images/c_open.png']      
+        ];
         
-        // Function to update timestamp
+        let isTalking = false;
+        let talkingInterval;
+
+        function startTalkingAnimation() {
+            if (isTalking) return; 
+            
+            isTalking = true;
+            let isOpen = false;
+            const currentPair = talkingImagePairs[currentMessageIndex];
+            
+            talkingInterval = setInterval(() => {
+                isOpen = !isOpen;
+                document.querySelector('.bg-image').style.backgroundImage = 
+                    `url('${isOpen ? currentPair[1] : currentPair[0]}')`;
+            }, 150); 
+        }
+
+        function stopTalkingAnimation() {
+            if (!isTalking) return;
+            
+            clearInterval(talkingInterval);
+            isTalking = false;
+
+            document.querySelector('.bg-image').style.backgroundImage = 
+                `url('${backgroundImages[currentMessageIndex]}')`;
+        }
+
         function updateTimestamp() {
             const timestampElement = document.getElementById("dialogue-timestamp");
             if (timestampElement) {
@@ -254,13 +277,14 @@
             }
         }
 
-        // Function for typing animation
         function typeText(text, element = document.getElementById("dialogue-text"), callback = null) {
             element.innerHTML = "";
             let i = 0;
             let lastPlayedTime = 0;
             
             clearTimeout(typingEffect);
+
+            startTalkingAnimation();
             
             function typeNext() {
                 if (i < text.length) {
@@ -281,9 +305,11 @@
                         
                         i++;
                     }
-                    typingEffect = setTimeout(typeNext, element === document.getElementById("dialogue-text") ? 20 : 100); // Slower typing for final message
+                    typingEffect = setTimeout(typeNext, element === document.getElementById("dialogue-text") ? 20 : 100);
                 } else {
-                    // Show next button when typing is complete
+
+                    stopTalkingAnimation();
+                    
                     if (currentMessageIndex < congratsMessages.length - 1) {
                         document.getElementById("next-btn").classList.remove("hidden");
                     } else if (currentMessageIndex === congratsMessages.length - 1) {
@@ -301,29 +327,22 @@
             typeNext();
         }
 
-        let finalMessageTyped = false; // Flag to prevent retyping
-
+        let finalMessageTyped = false; 
         function showFinalMessage() {
-            if (finalMessageTyped) return; // Prevent repeated execution
+            if (finalMessageTyped) return; 
 
-            finalMessageTyped = true; // Set flag to true
+            finalMessageTyped = true; 
 
-            // Fade out the dialogue box
             document.getElementById("dialogue-container").classList.add("fade-out");
 
-            // Wait for fade-out to complete
             setTimeout(() => {
-                // Hide dialogue box
                 document.getElementById("dialogue-container").style.display = "none";
 
-                // Change background to final image
                 document.querySelector('.bg-image').style.backgroundImage = `url('${finalImage}')`;
 
-                // Show full-screen message container
                 const fullScreenMsg = document.getElementById("full-screen-message");
                 fullScreenMsg.style.opacity = "1";
 
-                // Type the final message slowly only once
                 typeText(finalMessage, document.getElementById("final-message-text"), function () {
                     const backBtn = document.getElementById("back-btn");
                     backBtn.classList.remove("hidden");
@@ -337,39 +356,30 @@
             }, 1000);
         }
 
-        // Function to show next message
         function showNextMessage() {
             document.getElementById("next-btn").classList.add("hidden");
             currentMessageIndex++;
             if (currentMessageIndex < congratsMessages.length) {
-                // Change background image
-                document.querySelector('.bg-image').style.backgroundImage = `url('${backgroundImages[currentMessageIndex]}')`;
+                document.querySelector('.bg-image').style.backgroundImage = 
+                    `url('${talkingImagePairs[currentMessageIndex][0]}')`;
                 
                 typeText(congratsMessages[currentMessageIndex]);
                 updateTimestamp();
             } else {
-                // This branch is now handled in typeText function
             }
         }
 
-        // Initialize page
         document.addEventListener("DOMContentLoaded", function() {
-            // Preload images first, then initialize everything else
             preloadImages().then(() => {
-                // Play horn sound when page loads
                 const hornSound = document.getElementById("horn-sound");
-                
-                // Set volume to 50%
+         
                 hornSound.volume = 0.3;
                 
-                // Try to play the sound immediately on page load
                 hornSound.play().catch(error => {
                     console.log("Autoplay blocked:", error);
-                    
-                    // Fallback to play on first interaction with the page (any click)
+   
                     document.addEventListener('click', function playOnFirstClick() {
                         hornSound.play();
-                        // Remove the event listener after first click
                         document.removeEventListener('click', playOnFirstClick);
                     }, { once: true });
                 });
@@ -380,16 +390,14 @@
                 
                 updateTimestamp();
                 setInterval(updateTimestamp, 1000);
-                
-                // Set initial background image
-                document.querySelector('.bg-image').style.backgroundImage = `url('${backgroundImages[0]}')`;
-                
-                // Start with first message after fade-in completes
+
+                document.querySelector('.bg-image').style.backgroundImage = 
+                    `url('${talkingImagePairs[0][0]}')`;
+
                 setTimeout(function() {
                     typeText(congratsMessages[0]);
                 }, 800);
-                
-                // Set up next button event
+
                 document.getElementById("next-btn").addEventListener("click", showNextMessage);
             });
         });
